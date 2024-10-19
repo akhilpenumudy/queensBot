@@ -1,4 +1,5 @@
 # Queens Solver
+![image](https://github.com/user-attachments/assets/3ae76592-6ab5-4091-8dcf-74d30481d99c)
 
 ## About the Project
 
