@@ -9,11 +9,12 @@ def solve_queens(grid):
                 return False
 
         # Check diagonals
-        for i in range(len(grid)):
-            for j in range(len(grid)):
-                if grid[i][j] == "👑":
-                    if abs(row - i) == abs(col - j):
-                        return False
+        for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
+            if grid[i][j] == "👑":
+                return False
+        for i, j in zip(range(row, -1, -1), range(col, len(grid))):
+            if grid[i][j] == "👑":
+                return False
 
         # Check adjacent cells (including diagonally)
         for i in range(max(0, row - 1), min(len(grid), row + 2)):
@@ -29,26 +30,25 @@ def solve_queens(grid):
             for j in range(len(grid)):
                 color_regions[grid[i][j]].append((i, j))
 
-        return backtrack(list(color_regions.values()), 0, 0)
+        queens_count = [0] * len(grid)
+        return backtrack(list(color_regions.values()), queens_count, 0)
 
-    def backtrack(regions, row, col):
-        if row == len(grid):
-            return all(any(grid[i][j] == "👑" for i, j in region) for region in regions)
+    def backtrack(regions, queens_count, color_index):
+        if color_index == len(regions):
+            return all(count == 1 for count in queens_count)
 
-        if col == len(grid):
-            return backtrack(regions, row + 1, 0)
+        for row, col in regions[color_index]:
+            if queens_count[row] == 0 and is_safe(row, col):
+                grid[row][col] = "👑"
+                queens_count[row] += 1
 
-        color = grid[row][col]
-        if grid[row][col] == "👑":
-            return backtrack(regions, row, col + 1)
+                if backtrack(regions, queens_count, color_index + 1):
+                    return True
 
-        if is_safe(row, col):
-            grid[row][col] = "👑"
-            if backtrack(regions, row, col + 1):
-                return True
-            grid[row][col] = color
+                grid[row][col] = regions[color_index][0][1]  # Restore original color
+                queens_count[row] -= 1
 
-        return backtrack(regions, row, col + 1)
+        return False
 
     if solve():
         return grid
